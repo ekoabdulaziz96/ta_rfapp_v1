@@ -1,0 +1,123 @@
+{% extends 'templates.html' %}
+{% load static %}
+
+{% comment %} CSS {% endcomment %}
+{% block app_style %}
+    <link rel="stylesheet" href="{% static 'random_forest/css/style.css' %} ">
+    <link rel="stylesheet" href="{% static 'vendor/select-picker/bootstrap-select.min.css' %}">
+
+{% endblock app_style %}
+
+{% comment %} CONTENT {% endcomment %}
+{% block content_header %}
+{% endblock content_header %}
+
+{% block content %}
+    <div class=" container">
+    {% comment %} header {% endcomment %}
+        <div class="row">
+          <div class="col-md-12 grid-margin">
+            <div class="d-flex justify-content-between flex-wrap">
+              <div class="d-flex align-items-end flex-wrap">
+                <div class="mr-3 mr-xl-5 ml-4">
+                  <a class="btn btn-secondary" href="{% url 'rf:random-forest-index' %} ">
+                    <i class='mdi mdi-keyboard-backspace'></i> All {{page_role}}
+                  </a>
+                </div>
+              </div>
+              <div class="d-flex justify-content-between align-items-end flex-wrap">
+                  <div class="mr-3 mr-xl-5">
+                    <h2>{{page_judul}}</h2>
+                    <p class="mb-md-0">{{page_deskripsi}} </p>
+                  </div>
+              </div>
+            </div>
+          </div>
+        </div>
+    <br>
+        <div class="text-center mb-4" >
+          <a class="btn btn-info" href='{% url 'rf:dataset-detail' dataset.id %}'>
+              View Detail &nbsp;
+              <i class='mdi mdi-timetable' ></i> 
+          </a>
+          <a class="btn alert-secondary" href="#">
+              View Swarm-Box Plot &nbsp;
+              <i class='mdi mdi-chart-scatterplot-hexbin' ></i> 
+          </a>
+          <a class="btn btn-info" href="{% url 'rf:dataset-detail-swarm-box' dataset.id 'default' %}">
+              View Pair Plot &nbsp;
+              <i class='mdi mdi-chart-areaspline' ></i> 
+          </a>
+        </div>
+        <div class="card">
+            <div class="card-header text-center alert-warning">
+                  <div class="form-group">
+                    <label for="list_fitur">PIlih Nomor Pohon :</label>
+                    <select name="list_fitur" id="list_fitur" title='--pilih--' multiple class='selectpicker' data-live-search='true' data-width='100%'>
+                      <option value="">--Pilih Pohon--</option>
+                    </select>                       
+                  </div>
+                  <a id="submit-plot" class="btn btn-success" href="{% url 'rf:dataset-detail-swarm-box' dataset.id 'default' %}" title='{{dataset}}'>
+                    Submit
+                  </a>
+            </div>
+            <div class="card-body">
+              {% comment %} <iframe src="{% url 'rf:dataset-detail-boxplot' dataset.pk%}" frameborder="0" height="500px" width="100%"></iframe> {% endcomment %}
+              <iframe src="{{url_plot}}" frameborder="0" height="500px" width="100%">{{url_plot}}</iframe>
+
+              {% comment %} <h5>Pohon ke-{{list_fitur}}</h5>
+              <embed src="{% static 'random_forest/tree/tree.pdf' %}" type="application/pdf" width="100%" height="750px" class="responsive">
+              
+              <a href="{% static 'random_forest/tree/tree.pdf' %}">download</a> {% endcomment %}
+            </div>
+        </div>
+        
+
+    </div>
+
+{% endblock content %}
+
+{% comment %} JAVASCRIPTS {% endcomment %}
+{% block app_scripts %}
+    <script src="{% static 'random_forest/js/script.js' %}"></script>
+    <script src="{% static 'vendor/select-picker/bootstrap-select.min.js' %}"></script>
+
+    <script>
+        (function($) {
+        'use strict';
+            $(function() {
+                //$( "#dataset" ).addClass('active');
+                $("#dataset").addClass('active');
+                $("#submit-plot").hide();
+
+                $('#list_fitur').find('option').remove();
+                {% for i in fitur %}
+                  $('#list_fitur').append('<option value="{{i}}">{{i}}</option>');
+                {% endfor %}
+
+                $('#list_fitur').change(function(){
+                    var list_fitur = $('#list_fitur').val();
+                    if (list_fitur == '') {
+                      $("#submit-plot").hide();
+
+                    }else{
+                      $("#submit-plot").show();
+                    }
+
+                });
+                
+                $('body').on('click', '#submit-plot', function (event) {
+                  event.preventDefault();
+                  var me = $(this),
+                      url = me.attr('href'),
+                      title = me.attr('title');
+                  var list_fitur = $('#list_fitur').val();
+                  url = url.replace('default',list_fitur)
+
+                  window.location.replace(url);
+                });
+
+            });
+        })(jQuery);
+    </script>
+{% endblock app_scripts %}

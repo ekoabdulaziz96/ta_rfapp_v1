@@ -1,0 +1,187 @@
+{% extends 'templates.html' %}
+{% load static %}
+
+{% comment %} CSS {% endcomment %}
+{% block app_style %}
+    <link rel="stylesheet" href="{% static 'random_forest/css/style_form.css' %} ">
+    <link rel="stylesheet" href="{% static 'vendor/select-picker/bootstrap-select.min.css' %}">
+
+{% endblock app_style %}
+
+{% comment %} CONTENT {% endcomment %}
+{% block content_header %}
+{% endblock content_header %}
+
+{% block content %}
+    <div class=" container">
+    {% comment %} header {% endcomment %}
+        <div class="row">
+          <div class="col-md-12 grid-margin">
+            <div class="d-flex justify-content-between flex-wrap">
+              <div class="d-flex align-items-end flex-wrap">
+                <div class="mr-3 mr-xl-5 ml-4">
+                  <a class="btn btn-secondary" href="{% url 'rf:set-fitur-index' %} ">
+                    <i class='mdi mdi-keyboard-backspace'></i> All {{page_role}} 
+                  </a>
+                </div>
+              </div>
+              <div class="d-flex justify-content-between align-items-end flex-wrap">
+                  <div class="mr-3 mr-xl-5">
+                    <h2>{{page_judul}}</h2>
+                    <p class="mb-md-0">{{page_deskripsi}} </p>
+                  </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      <br>
+      <div>{{fitur}}</div>
+{% comment %} content {% endcomment %}
+      {% comment %} <div class='alert alert-info'>Dataset :  {{get_dataset.dataset.nama}} </div> {% endcomment %}
+       <form method="POST" enctype="multipart/form-data">
+         {% csrf_token %}
+
+            {{form.as_p}}
+         
+         <br>
+         <a class="btn btn-secondary" href="{% url 'rf:set-fitur-index' %} ">Cancel</a>
+         <button type="submit" class="btn btn-success">submit</button>
+       </form>
+
+    </div>
+
+{% endblock content %}
+
+
+{% comment %} JAVASCRIPTS {% endcomment %}
+{% block app_scripts %}
+    <script src="{% static 'random_forest/js/script.js' %}"></script>
+    <script src="{% static 'vendor/select-picker/bootstrap-select.min.js' %}"></script>
+
+    <script>
+        (function($) {
+        'use strict';
+            $(function() {
+              $("#set-fitur").addClass('active');
+              $( ".errorlist" ).addClass('alert alert-danger');
+              //init dataset
+              $('#id_dataset').find('option').remove();
+              $('#id_dataset').append('<option value="{{get_dataset.dataset.id}}">{{get_dataset.dataset.nama}}</option>');
+              //init dataset
+              $('#id_fitur').find('option').remove();
+              $('#id_fitur').append('<option value="semua_fitur">Semua Fitur</option>');
+              $('#id_fitur').removeAttr('multiple','multiple');
+
+              $('#id_reduksi_nilai_kurang_dari').val('');
+
+
+              {% if setfitur %}
+                  $('#id_reduksi_nilai_kurang_dari').val({{setfitur.reduksi_nilai_kurang_dari}});
+                    
+                  var data_all_fitur ='{{setfitur.all_fitur}}';
+                  //set_default(data_id_dataset,data_kolom_label,data_nilai_label_kanker)
+                  if(data_all_fitur == 'True'){
+                    $('#id_fitur').find('option').remove();
+                    $('#id_fitur').append('<option value="semua_fitur">Semua Fitur</option>');
+                    $('#id_fitur').removeAttr('multiple','multiple');
+                    $('#id_fitur').attr('class','form-control');
+
+
+                  }else{
+                    $('#id_reduksi_null_fitur').find('option').remove();
+                    $('#id_reduksi_null_fitur').append('<option value="False">Tidak</option>');
+
+                    $('#id_reduksi_nilai_kurang_dari').val(0);
+                    $('#id_reduksi_nilai_kurang_dari').attr('max',0);
+                    $('#id_reduksi_nilai_kurang_dari').attr('readonly','readonly');
+
+                    $('.selectpicker').selectpicker('destroy')
+                    $('#id_fitur').find('option').remove();
+                    $('#id_fitur').attr('required','required')
+                    $('#id_fitur').append('<option value>fitur sekarang : {{setfitur.fitur}}</option>');
+
+                    {% for fitur in fiturs %}
+                       $('#id_fitur').append('<option value="{{fitur}}">{{fitur}} </option>');
+                    {% endfor %}
+
+                    $('#id_fitur').removeAttr('class','form-control');
+                    $('#id_fitur').attr('class','selectpicker');
+                    $('#id_fitur').attr('data-live-search','true');
+                    $('#id_fitur').attr('data-width','100%');
+                    $('#id_fitur').attr('multiple','multiple');
+                    $('#id_fitur').attr('title','{{setfitur.fitur}}');
+                    $('.selectpicker').selectpicker();
+                    $('#id_fitur').attr('title','{{setfitur.fitur}}');
+
+
+                  } 
+
+              {% endif %}
+
+            //set kolom label
+              $('#id_all_fitur').change(function(){
+                  $('.selectpicker').selectpicker('destroy')
+                  $('#id_fitur').attr('class','form-control');
+                  $('#id_fitur').removeAttr('class','selectpicker');
+                  $('#id_fitur').removeAttr('data-live-search','true');
+                  $('#id_fitur').removeAttr('data-width','100%');
+                  $('#id_fitur').attr('multiple','multiple');
+                  $('#id_fitur').removeAttr('title','--pilih--');
+
+                  $('#id_fitur').find('option').remove();
+                  $('#id_fitur').removeAttr('required','required')
+
+
+                  var all_fitur = $("#id_all_fitur").val();
+                  //onsole.log(all_fitur)
+                  if(all_fitur == 'True'){
+                    $('#id_reduksi_null_fitur').find('option').remove();
+                    $('#id_reduksi_null_fitur').append('<option value="True">Ya</option>');
+                    $('#id_reduksi_null_fitur').append('<option value="False">Tidak</option>');
+
+                    $('#id_reduksi_nilai_kurang_dari').val('');
+                    $('#id_reduksi_nilai_kurang_dari').removeAttr('max',0);
+                    $('#id_reduksi_nilai_kurang_dari').removeAttr('readonly','readonly');
+
+                    $('#id_fitur').find('option').remove();
+                    $('#id_fitur').append('<option value="semua_fitur">Semua Fitur</option>');
+                    $('#id_fitur').removeAttr('multiple','multiple');
+                    $('#id_fitur').attr('class','form-control');
+
+
+                  }else{
+                    $('#id_reduksi_null_fitur').find('option').remove();
+                    $('#id_reduksi_null_fitur').append('<option value="False">Tidak</option>');
+
+                    $('#id_reduksi_nilai_kurang_dari').val(0);
+                    $('#id_reduksi_nilai_kurang_dari').attr('max',0);
+                    $('#id_reduksi_nilai_kurang_dari').attr('readonly','readonly');
+
+                    
+
+                    $('#id_fitur').find('option').remove();
+                    $('#id_fitur').attr('required','required')
+                    {% if setfitur %}
+                      $('#id_fitur').append('<option value selected>fitur sekarang : {{setfitur.fitur}}</option>');
+                    {% endif %}
+
+                    {% for fitur in fiturs %}
+                        $('#id_fitur').append('<option value="{{fitur}}">{{fitur}} </option>');
+                    {% endfor %}
+
+                    $('#id_fitur').removeAttr('class','form-control');
+                    $('#id_fitur').attr('class','selectpicker');
+                    $('#id_fitur').attr('data-live-search','true');
+                    $('#id_fitur').attr('data-width','100%');
+                    $('#id_fitur').attr('multiple','multiple');
+                    $('#id_fitur').attr('title','--pilih--');
+                    $('.selectpicker').selectpicker('refresh');                    
+
+                  }
+                  
+                });
+              // --------------
+            });
+        })(jQuery);
+    </script>
+{% endblock app_scripts %}

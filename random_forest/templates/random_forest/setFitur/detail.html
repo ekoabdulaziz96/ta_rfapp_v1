@@ -1,0 +1,123 @@
+{% extends 'templates.html' %}
+{% load static %}
+
+{% comment %} CSS {% endcomment %}
+{% block app_style %}
+    <link rel="stylesheet" href="{% static 'random_forest/css/style.css' %} ">
+{% endblock app_style %}
+
+{% comment %} CONTENT {% endcomment %}
+{% block content_header %}
+{% endblock content_header %}
+
+{% block content %}
+    <div class=" container">
+    {% comment %} header {% endcomment %}
+        <div class="row">
+          <div class="col-md-12 grid-margin">
+            <div class="d-flex justify-content-between flex-wrap">
+              <div class="d-flex align-items-end flex-wrap">
+                <div class="mr-3 mr-xl-5 ml-4">
+                  <a class="btn btn-secondary" href="{% url 'rf:set-fitur-index' %} ">
+                    <i class='mdi mdi-keyboard-backspace'></i> All {{page_role}}
+                  </a>
+                </div>
+              </div>
+              <div class="d-flex justify-content-between align-items-end flex-wrap">
+                  <div class="mr-3 mr-xl-5">
+                    <h2>{{page_judul}}</h2>
+                    <p class="mb-md-0">{{page_deskripsi}} </p>
+                  </div>
+              </div>
+            </div>
+          </div>
+        </div>
+    <br>
+        <div class="card">
+            <div class="card-header">
+                <h2>{{setfitur.dataset.nama}} </h2>
+                <p><u>Separator</u> : {{setfitur.dataset.separator}} </p>
+                <p><u>Deskripsi</u> : {{setfitur.dataset.deskripsi}} </p>
+               <a class="btn btn-primary" href="{% url 'rf:dataset-detail' setfitur.dataset.id %}" target='__blank' title='download file {{setfitur.dataset}}'>View Dataset Detail <i class="mdi mdi-file-export text-white"></i></a>
+                                   
+            </div>
+            <div class="card-body">
+                <table border='0' style='font-size : 14px' class='table table-striped'>
+                    <tr>
+                        <th width='20%'>Atribut</th>
+                        <th width='3%' class='text-center'>|</th>
+                        <th>Nilai</th>
+                    </tr> 
+                    <tr>
+                        <td>Fitur (X)</td>
+                        <td width='3%' class='text-center'> : </td>
+                        <td>{{setfitur.fitur}}</td>
+                    </tr>
+                    <tr>
+                        <td>Eliminasi fitur yang semua nilainya adalah null/nol untuk kelas tertentu</td>
+                        <td width='3%' class='text-center'> : </td>
+                        <td>{{setfitur.reduksi_null_fitur}}</td>
+                    </tr>
+                    <tr>
+                        <td>Eliminasi fitur yang maksimal nilainya kuarang dari</td>
+                        <td width='3%' class='text-center'> : </td>
+                        <td>{{setfitur.reduksi_nilai_kurang_dari}}</td>
+                    </tr>
+
+                </table>
+                
+            </div>
+        </div>
+        {% comment %}  DF DESCRIBE{% endcomment %}
+        <div class="card">
+            <div class="card-header">
+            </div>
+            <div class="card-body">
+                {% comment %} <img src="{% url 'rf:set-fitur-detail-boxplot' dataset.pk%}" alt="boxplot"> {% endcomment %}
+                {% comment %} <iframe src="{% url 'rf:set-fitur-detail-boxplot' dataset.pk%}" frameborder="0" height="500px" width="100%"></iframe> {% endcomment %}
+            </div>
+        </div>
+
+    </div>
+
+{% endblock content %}
+
+{% comment %} JAVASCRIPTS {% endcomment %}
+{% block app_scripts %}
+    <script src="{% static 'random_forest/js/script.js' %}"></script>
+    <script>
+        (function($) {
+        'use strict';
+            $(function() {
+                //$( "#dataset" ).addClass('active');
+                $("#set-fitur").addClass('active');
+
+                $('.dataframe-style').attr('border',0)
+                $('.dataframe-style-2').attr('border',0)
+                $('.dataframe-style').DataTable({
+                  "aLengthMenu": [
+                      [5, 10, 15, -1],
+                      [5, 10, 15, "All"]
+                  ],
+                  "iDisplayLength": 5,
+                  "language": {
+                      search: "search : "
+                  },
+                  searching: true, paging: true, info: true
+              });
+                $('.dataframe-style-2').DataTable({
+                  "aLengthMenu": [
+                      [5, 10, 15, -1],
+                      [5, 10, 15, "All"]
+                  ],
+                  "iDisplayLength": 10,
+                  "language": {
+                      search: "search : "
+                  },
+                  searching: true, paging: true, info: true
+              });
+
+            });
+        })(jQuery);
+    </script>
+{% endblock app_scripts %}

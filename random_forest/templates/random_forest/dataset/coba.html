@@ -1,0 +1,41 @@
+{% extends 'templates.html' %}
+{% load static %}
+
+{% comment %} CSS {% endcomment %}
+{% block app_style %}
+    <link rel="stylesheet" href="{% static 'random_forest/css/style_form.css' %} ">
+{% endblock app_style %}
+
+{% comment %} CONTENT {% endcomment %}
+{% block content_header %}
+{% endblock content_header %}
+
+{% block content %}
+    <div class=" container">
+      <div id="{{single_chart.id}}"> </div>
+
+    </div>
+
+{% endblock content %}
+
+
+{% comment %} JAVASCRIPTS {% endcomment %}
+{% block app_scripts %}
+    <script src="{% static 'random_forest/js/script.js' %}"></script>
+	<script type="text/javascript" src="{% static 'vendor/d3js/d3js.js' %}"></script>
+	<script type="text/javascript" src="{% static 'vendor/mpld3/mpld3.js' %}"></script>
+    <script>
+        (function($) {
+        'use strict';
+            $(function() {
+                $( "#dataset" ).addClass('active');
+                $( ".errorlist" ).addClass('alert alert-danger');
+
+                  var figureId = "{{single_chart.id}}";
+                  var json01 = {{single_chart.json|safe}};
+                  mpld3.draw_figure(figureId, json01);
+
+            });
+        })(jQuery);
+    </script>
+{% endblock app_scripts %}

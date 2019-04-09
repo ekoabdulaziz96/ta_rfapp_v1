@@ -1,0 +1,186 @@
+{% extends 'templates.html' %}
+{% load static %}
+
+{% comment %} CSS {% endcomment %}
+{% block app_style %}
+    <link rel="stylesheet" href="{% static 'random_forest/css/style.css' %} ">
+{% endblock app_style %}
+
+{% comment %} CONTENT {% endcomment %}
+{% block content_header %}
+{% endblock content_header %}
+
+{% block content %}
+    <div class=" container">
+    {% comment %} header {% endcomment %}
+        <div class="row">
+          <div class="col-md-12 grid-margin">
+            <div class="d-flex justify-content-between flex-wrap">
+              <div class="d-flex align-items-end flex-wrap">
+                <div class="mr-3 mr-xl-5 ml-4">
+                  <a class="btn btn-secondary" href="{% url 'rf:random-forest-index' %} ">
+                    <i class='mdi mdi-keyboard-backspace'></i> All {{page_role}}
+                  </a>
+                </div>
+              </div>
+              <div class="d-flex justify-content-between align-items-end flex-wrap">
+                  <div class="mr-3 mr-xl-5">
+                    <h2>{{page_judul}}</h2>
+                    <p class="mb-md-0">{{page_deskripsi}} </p>
+                  </div>
+              </div>
+            </div>
+          </div>
+        </div>
+    <br>
+        <div class="text-center mb-4" >
+          <a class="btn alert-secondary" href="#">
+              <i class='mdi mdi-arrow-left' ></i> 
+              View  Detail &nbsp;
+          </a>
+          <a class="btn btn-info" href="{% url 'rf:random-forest-pohon' randomforest.id 0 %} ">
+              View Pohon &nbsp;
+              <i class='mdi mdi-arrow-right' ></i> 
+          </a>
+        </div>
+        <div class="card">
+            <div class="card-header">
+                <h2>{{randomforest.dataset.nama}} </h2>
+                <p><u>Separator</u> : {{randomforest.dataset.separator}} </p>
+                <p><u>Deskripsi</u> : {{randomforest.dataset.deskripsi}} </p>
+               <a class="btn btn-primary" href="{% url 'rf:dataset-detail' randomforest.dataset.id %}" target='__blank' title='download file {{randomforest.dataset}}'>View Dataset Detail <i class="mdi mdi-file-export text-white"></i></a>
+                                   
+            </div>
+            <div class="card-body">
+                <p><u> <a href="{{dataset.file_dataset.url}}" target='__blank'>download data</a></u> </p>
+                <p><a href="#informasi-data">Informasi Data</a></p>
+                <p><a href="#data-cleaning">Data Cleaning</a></p>
+                <p><a href="#evaluasi-kf-cv">Evalusasi dengan K-Fold Cross Validation</a></p>
+                <p><a href="#fi">Features Importances</a></p>
+            </div>
+        </div>
+        {% comment %}  DF DESCRIBE{% endcomment %}
+        <div class="card" id="informasi-data">
+            <div class="card-header">
+            </div>
+            <div class="card-body">
+                <h5>Informasi Data</h5>
+                <table border='0' style='font-size : 14px' class='table table-striped'>
+                    <tr>
+                        <th width='18%'>Atribut</th>
+                        <th width='3%' class='text-center'>|</th>
+                        <th>Nilai</th>
+                    </tr> 
+                    <tr>
+                        <td>Ukuran Data Awal</td>
+                        <td width='3%' class='text-center'> : </td>
+                        <td>{{dataset_shape}} -> (baris,kolom)</td>
+                    </tr>
+                    <tr>
+                        <td>Fitur (X)</td>
+                        <td width='3%' class='text-center'> : </td>
+                        <td>{{randomforest.setfitur.fitur}}</td>
+                    </tr>
+                                        <tr>
+                        <td>Kolom label (y)</td>
+                        <td width='5%' class='text-center'> : </td>
+                        <td>{{randomforest.setlabel.kolom_label}}</td>
+                    </tr>
+                    <tr>
+                        <td>Nilai label/kelas</td>
+                        <td width='5%' class='text-center'> : </td>
+                        <td> {{label_label}}</td>
+                    </tr>
+                    <tr>
+                        <td>Frekuensi label/kelas</td>
+                        <td width='5%' class='text-center'> : </td>
+                        <td> {{label_frekuensi}}</td>
+                    </tr>
+                    <tr>
+                        <td>Nilai label kelas kanker</td>
+                        <td width='5%' class='text-center'> : </td>
+                        <td>{{randomforest.setlabel.nilai_label_kanker}}</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+        {% comment %}  DF DESCRIBE{% endcomment %}
+        <div class="card" id="data-cleaning">
+            <div class="card-header">
+            </div>
+            <div class="card-body">
+                <h5>Data Cleaning</h5>
+                <table border='0' style='font-size : 14px' class='table table-striped'>
+                    <tr>
+                        <th width='18%'>Atribut</th>
+                        <th width='3%' class='text-center'>|</th>
+                        <th>Nilai</th>
+                    </tr> 
+                    <tr>
+                        <td>Eliminasi fitur yang semua nilainya adalah null/nol untuk kelas tertentu</td>
+                        <td width='3%' class='text-center'> : </td>
+                        <td>{{randomforest.setfitur.reduksi_null_fitur}}</td>
+                    </tr>
+                    <tr>
+                        <td>Eliminasi fitur yang maksimal nilainya kuarang dari</td>
+                        <td width='3%' class='text-center'> : </td>
+                        <td>{{randomforest.setfitur.reduksi_nilai_kurang_dari}}</td>
+                    </tr>
+                    <tr>
+                        <td>Ukuran Data Setelah Cleaning</td>
+                        <td width='3%' class='text-center'> : </td>
+                        <td>{{dataset_shape_clean}} -> (baris,kolom)</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+        {% comment %}  DF DESCRIBE{% endcomment %}
+        <div class="card" id="evaluasi-kf-cv">
+            <div class="card-header">
+            </div>
+            <div class="card-body">
+                <h5>Evalusasi dengan K-Fold Cross Validation</h5>
+                {{df_result|safe}}
+            </div>
+        </div>
+        {% comment %}  DF DESCRIBE{% endcomment %}
+        <div class="card" id="fi">
+            <div class="card-header">
+            </div>
+            <div class="card-body">
+                <h5>Features Importances</h5>
+                {{df_FI|safe}}
+            </div>
+        </div>
+
+    </div>
+
+{% endblock content %}
+
+{% comment %} JAVASCRIPTS {% endcomment %}
+{% block app_scripts %}
+    <script src="{% static 'random_forest/js/script.js' %}"></script>
+    <script>
+        (function($) {
+        'use strict';
+            $(function() {
+                //$( "#dataset" ).addClass('active');
+                $("#random-forest").addClass('active');
+
+                $('.dataframe-style').attr('border',0)
+                $('.dataframe-style').DataTable({
+                  "aLengthMenu": [
+                      [5, 10, 15, -1],
+                      [5, 10, 15, "All"]
+                  ],
+                  "iDisplayLength": 10,
+                  "language": {
+                      search: "search : "
+                  },
+                  searching: true, paging: true, info: true
+              });
+
+            });
+        })(jQuery);
+    </script>
+{% endblock app_scripts %}

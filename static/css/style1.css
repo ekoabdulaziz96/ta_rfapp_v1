@@ -1,0 +1,42 @@
+/* h1 {
+	color: #555;
+	font-family: Arial, Helvetica, sans-serif;
+}
+
+nav ul {
+	background-color: #555;
+	margin: 0;
+	padding: 0 10px;
+	overflow: hidden;
+}
+
+nav li {
+	float: left;
+}
+
+nav a {
+	color: #fff;
+	display: block;
+	font-family: Arial, Helvetica, sans-serif;
+	padding: 10px 10px;
+	text-decoration: none;
+
+}
+
+nav a:hover {
+	background-color: darkmagenta
+} */
+
+.jumbotron {
+	background-image: url("/static/img/mainHeader.jpg");
+	background-position: center;
+	background-size: cover;
+	height: 500px;
+	font-family: Arial,
+
+		/* background-color: cornflowerblue */
+}
+
+#content {
+	margin-top: 100px;
+}

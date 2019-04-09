@@ -1,0 +1,149 @@
+{% extends 'templates.html' %}
+{% load static %}
+
+{% comment %} CSS {% endcomment %}
+{% block app_style %}
+    <link rel="stylesheet" href="{% static 'random_forest/css/style.css' %} ">
+{% endblock app_style %}
+
+{% comment %} CONTENT {% endcomment %}
+{% block content_header %}
+{% endblock content_header %}
+
+{% block content %}
+    <div class=" container">
+    {% comment %} header {% endcomment %}
+        <div class="row">
+          <div class="col-md-12 grid-margin">
+            <div class="d-flex justify-content-between flex-wrap">
+              <div class="d-flex align-items-end flex-wrap">
+                <div class="mr-3 mr-xl-5 ml-4">
+                  <a class="btn btn-secondary" href="{% url 'rf:dataset-index' %} ">
+                    <i class='mdi mdi-keyboard-backspace'></i> All {{page_role}}
+                  </a>
+                </div>
+              </div>
+              <div class="d-flex justify-content-between align-items-end flex-wrap">
+                  <div class="mr-3 mr-xl-5">
+                    <h2>{{page_judul}}</h2>
+                    <p class="mb-md-0">{{page_deskripsi}} </p>
+                  </div>
+              </div>
+            </div>
+          </div>
+        </div>
+    <br>
+        <div class="text-center mb-4" >
+          <a class="btn alert-secondary" href='#'>
+              View Detail &nbsp;
+              <i class='mdi mdi-timetable' ></i> 
+          </a>
+          <a class="btn btn-info" href="{% url 'rf:dataset-detail-swarm-box' dataset.id 'default'%}">
+              View Swarm-Box Plot &nbsp;
+              <i class='mdi mdi-chart-scatterplot-hexbin' ></i> 
+          </a>
+          <a class="btn btn-info" href="{% url 'rf:dataset-detail-swarm-box' dataset.id 'default'%}">
+              View Pair Plot &nbsp;
+              <i class='mdi mdi-chart-areaspline' ></i> 
+          </a>
+        </div>
+        <div class="card">
+            <div class="card-header">
+                <h2>{{dataset.nama}} </h2>
+                <p><u>Separator</u> : {{dataset.separator}} </p>
+                <p><u>Deskripsi</u> : {{dataset.deskripsi}} </p>
+            </div>
+            <div class="card-body">
+                <p><u> <a href="{{dataset.file_dataset.url}}" target='__blank'>download data</a></u> </p>
+                <p>ukuran (baris,kolom) : {{df_shape}} </p>
+                <p><a href="#dataframe-head">Dataframe Head</a></p>
+                <p><a href="#dataframe-describe">Dataframe Describe</a></p>
+                <p><a href="#null-value">Terdapat Nilai Null dalam {{df_null_count}} Kolom</a></p>
+            </div>
+        </div>
+        {% comment %}  DF HEAD{% endcomment %}
+        <div class="card" id="dataframe-head">
+            <div class="card-header">
+            </div>
+            <div class="card-body">
+                <h3>Dataframe head</h3>
+                <div class="table-responsive">
+                  {{df_head|safe}}
+               </div>
+            </div>
+        </div>
+        {% comment %}  DF DESCRIBE{% endcomment %}
+        <div class="card" id="dataframe-describe">
+            <div class="card-header">
+            </div>
+            <div class="card-body">
+                <h3>Dataframe Describe</h3>
+                <div class="table-responsive">
+                  {{df_describe|safe}}
+               </div>
+            </div>
+        </div>
+        {% comment %}  DF NULL{% endcomment %}
+        <div class="card" id="null-value">
+            <div class="card-header">
+            </div>
+            <div class="card-body">
+                <h3>NULL Value </h3>
+                <div class="table-responsive">
+                  {{df_null|safe}}
+               </div>
+            </div>
+        </div>
+        {% comment %}  DF DESCRIBE{% endcomment %}
+        <div class="card">
+            <div class="card-header">
+            </div>
+            <div class="card-body">
+                {% comment %} <iframe src="{% url 'rf:dataset-detail-boxplot' dataset.pk%}" frameborder="0" height="500px" width="100%"></iframe> {% endcomment %}
+            </div>
+        </div>
+
+    </div>
+
+{% endblock content %}
+
+{% comment %} JAVASCRIPTS {% endcomment %}
+{% block app_scripts %}
+    <script src="{% static 'random_forest/js/script.js' %}"></script>
+    <script type="text/javascript" src="{% static 'vendor/d3js/d3js.js' %}"></script>
+	<script type="text/javascript" src="{% static 'vendor/mpld3/mpld3.js' %}"></script>
+    <script>
+        (function($) {
+        'use strict';
+            $(function() {
+                $( "#dataset" ).addClass('active');
+
+                $('.dataframe-style').attr('border',0)
+                $('.dataframe-style-2').attr('border',0)
+                $('.dataframe-style').DataTable({
+                  "aLengthMenu": [
+                      [5, 10, 15, -1],
+                      [5, 10, 15, "All"]
+                  ],
+                  "iDisplayLength": 5,
+                  "language": {
+                      search: "search : "
+                  },
+                  searching: true, paging: true, info: true
+              });
+                $('.dataframe-style-2').DataTable({
+                  "aLengthMenu": [
+                      [5, 10, 15, -1],
+                      [5, 10, 15, "All"]
+                  ],
+                  "iDisplayLength": 10,
+                  "language": {
+                      search: "search : "
+                  },
+                  searching: true, paging: true, info: true
+              });
+
+            });
+        })(jQuery);
+    </script>
+{% endblock app_scripts %}

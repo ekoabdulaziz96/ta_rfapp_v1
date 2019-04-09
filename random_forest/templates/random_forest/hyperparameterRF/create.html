@@ -1,0 +1,79 @@
+{% extends 'templates.html' %}
+{% load static %}
+
+{% comment %} CSS {% endcomment %}
+{% block app_style %}
+    <link rel="stylesheet" href="{% static 'random_forest/css/style_form.css' %} ">
+{% endblock app_style %}
+
+{% comment %} CONTENT {% endcomment %}
+{% block content_header %}
+{% endblock content_header %}
+
+{% block content %}
+    <div class=" container">
+    {% comment %} header {% endcomment %}
+        <div class="row">
+          <div class="col-md-12 grid-margin">
+            <div class="d-flex justify-content-between flex-wrap">
+              <div class="d-flex align-items-end flex-wrap">
+                <div class="mr-3 mr-xl-5 ml-4">
+                  <a class="btn btn-secondary" href="{% url 'rf:hyperparameter-RF-index' %} ">
+                    <i class='mdi mdi-keyboard-backspace'></i> All {{page_role}}
+                  </a>
+                </div>
+              </div>
+              <div class="d-flex justify-content-between align-items-end flex-wrap">
+                  <div class="mr-3 mr-xl-5">
+                    <h2>{{page_judul}}</h2>
+                    <p class="mb-md-0">{{page_deskripsi}} </p>
+                  </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      <br>
+{% comment %} content {% endcomment %}
+        <div class='alert alert-warning'>
+          <h6>Maksimal Fitur : </h6>
+          <ul>
+            <li>Jika diisi dengan tipe integer, misal: 5, 10, 15. Maka <u>nilai tersebut</u> yang akan di set sebagai Maksimal Fitur</li>
+            <li>Jika diisi dengan tipe float, misal: 0.5, 0.6, 0.7 . Maka <u>nilai tersebut akan dikalikan dengan jumlah fitur</u> kemudian di set sebagai Maksimal Fitur</li>
+            <li>Jika diisi dengan "sqrt". Maka <u>akar kuadrat dari jumlah fitur</u> yang akan di set sebagai Maksimal Fitur</li>
+            <li>Jika diisi dengan "log2". Maka <u>log dari jumlah fitur</u> yang akan di set sebagai Maksimal Fitur</li>
+          </ul>
+          <h6> <u> Count Fitur (X) setelah cleaning</u> : {{count_x}} </h6>
+          <ul>
+            <li>Bila Mak fitur melebihi ukuran fitur (X) setelah proses cleaning, maka "MAKSIMAL FITUR" akan di set otomatis ke nilai maksimal fitur (X) setelah cleaning</li>
+          </ul>
+        </div>
+       <form method="POST" enctype="multipart/form-data">
+         {% csrf_token %}
+
+            {{form.as_p}}
+         
+         <br>
+         <a class="btn btn-secondary" href="{% url 'rf:hyperparameter-RF-index' %} ">Cancel</a>
+         <button type="submit" class="btn btn-success">submit</button>
+       </form>
+
+    </div>
+
+{% endblock content %}
+
+
+{% comment %} JAVASCRIPTS {% endcomment %}
+{% block app_scripts %}
+    <script src="{% static 'random_forest/js/script.js' %}"></script>
+    <script>
+        (function($) {
+        'use strict';
+            $(function() {
+              $("#hyperparameterRF").addClass('active');
+              $( ".errorlist" ).addClass('alert alert-danger');
+
+
+            });
+        })(jQuery);
+    </script>
+{% endblock app_scripts %}

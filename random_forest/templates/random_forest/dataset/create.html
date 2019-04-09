@@ -1,0 +1,65 @@
+{% extends 'templates.html' %}
+{% load static %}
+
+{% comment %} CSS {% endcomment %}
+{% block app_style %}
+    <link rel="stylesheet" href="{% static 'random_forest/css/style_form.css' %} ">
+{% endblock app_style %}
+
+{% comment %} CONTENT {% endcomment %}
+{% block content_header %}
+{% endblock content_header %}
+
+{% block content %}
+    <div class=" container">
+    {% comment %} header {% endcomment %}
+        <div class="row">
+          <div class="col-md-12 grid-margin">
+            <div class="d-flex justify-content-between flex-wrap">
+              <div class="d-flex align-items-end flex-wrap">
+                <div class="mr-3 mr-xl-5 ml-4">
+                  <a class="btn btn-secondary" href="{% url 'rf:dataset-index' %} ">
+                    <i class='mdi mdi-keyboard-backspace'></i> All {{page_role}}
+                  </a>
+                </div>
+              </div>
+              <div class="d-flex justify-content-between align-items-end flex-wrap">
+                  <div class="mr-3 mr-xl-5">
+                    <h2>{{page_judul}}</h2>
+                    <p class="mb-md-0">{{page_deskripsi}} </p>
+                  </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      <br>
+{% comment %} content {% endcomment %}
+       <form method="POST" enctype="multipart/form-data">
+         {% csrf_token %}
+
+            {{form.as_p}}
+         
+         <br>
+         <a class="btn btn-secondary" href="{% url 'rf:dataset-index' %} ">Cancel</a>
+         <button type="submit" class="btn btn-success">submit</button>
+       </form>
+
+    </div>
+
+{% endblock content %}
+
+
+{% comment %} JAVASCRIPTS {% endcomment %}
+{% block app_scripts %}
+    <script src="{% static 'random_forest/js/script.js' %}"></script>
+    <script>
+        (function($) {
+        'use strict';
+            $(function() {
+                $( "#dataset" ).addClass('active');
+                $( ".errorlist" ).addClass('alert alert-danger');
+
+            });
+        })(jQuery);
+    </script>
+{% endblock app_scripts %}

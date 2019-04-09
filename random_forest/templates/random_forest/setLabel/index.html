@@ -1,0 +1,252 @@
+
+{% extends 'templates.html' %}
+{% load static %}
+
+{% comment %} CSS {% endcomment %}
+{% block app_style %}
+    {% comment %} <link rel="stylesheet" href="{% static 'random_forest/css/style.css' %} "> {% endcomment %}
+{% endblock app_style %}
+
+{% comment %} CONTENT {% endcomment %}
+{% block content_header %}
+{% endblock content_header %}
+
+{% block content %}
+
+    <div class=" container">
+    {% comment %} header {% endcomment %}
+        <div class="row">
+          <div class="col-md-12 grid-margin">
+            <div class="d-flex justify-content-between flex-wrap">
+              <div class="d-flex align-items-end flex-wrap">
+                <div class="mr-3 mr-xl-5 ml-4">
+                {% if count_default_dataset == 1  %}
+                  {% if count_setlabel == 0 %}
+                  <a class="btn btn-success" href="{% url 'rf:set-label-create' %} ">
+                    <i class='mdi mdi-plus-circle-outline'></i> Tambah 
+                  </a>
+                  {% else %}
+                  <a class="btn btn-secondary" href="# ">
+                    <i class='mdi mdi-plus-circle-outline'></i> Tambah 
+                  </a>
+                  {% endif %}
+                {% endif %}
+
+                </div>
+              </div>
+              <div class="d-flex justify-content-between align-items-end flex-wrap">
+                  <div class="mr-3 mr-xl-5">
+                    <h2>{{page_judul}}</h2>
+                    <p class="mb-md-0">{{page_deskripsi}} </p>
+                  </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      <br>
+{% comment %} content {% endcomment %}
+              <div class="card">
+                <div class="card-header alert-warning" >
+                  <h6> <u> Perhatian </u>: label hanya berisi <i>Binary Class</i> (misal: Normal dan Kanker). Pastikan memilih kolom label dan nilai label kanker dengan benar  </h6>
+                </div>              
+                <div class="card-body">
+                  {% if count_default_dataset != 1 %}
+                    <div class="text-center">
+                      <a class="btn btn-info"  href="{% url 'rf:dataset-index' %}">
+                        <i class="mdi mdi-lock-open-outline"></i>
+                        <span class="menu-title">Silahkan Memilih Default Dataset Terlebih Dahulu</span>
+                      </a>
+                    </div>
+                  {% else %}
+                    <div class="table-responsive">
+                      <table id="coba" class="table">
+                        <thead>
+                          <tr>
+                              <th width="5%">No</th>
+                              <th width="7%">Validate Label</th>
+                              <th>Dataset</th>
+                              <th>Target</th>
+                              <th width="20%">Target kelas Kanker</th>
+                              <th width="13%">Kelola</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                              
+                              {% for setlabel in setlabels %}
+                                <tr>
+                                  <td class="text-center">{{forloop.counter}} </td>
+                                  <td>
+                                    {% if setlabel.validate_label == False %}
+                                      <a id="set-default-dataset" class="btn btn-info use-dataset" href="{% url 'rf:set-label-set-default' setlabel.id %}" title='validasi label {{setlabel}}'>
+                                    {% else %}
+                                      <a class="btn btn-secondary use-dataset" href="#" title='validasi label {{setlabel}}'>
+                                    {% endif %}
+                                    {{setlabel.validate_label}}                                  
+                                        <i class="mdi mdi-lock-open-outline" style="zoom:1.5"></i>
+                                      </a>
+                                  </td>
+                                  <td>
+                                    <a class="btn btn-primary" href="{% url 'rf:dataset-detail' setlabel.dataset.id %}" target='__blank' title='tinjau file dataset {{setlabel.dataset.nama}}'><i class="mdi mdi-file-export text-white"></i></a>
+                                      {{setlabel.dataset}} 
+                                  </td>
+                                  <td>{{setlabel.kolom_label}}</td>
+                                  <td>{{setlabel.nilai_label_kanker}}</td>
+                                  <td>
+                                    {% if setlabel.use_rf == 1 %}
+                                      <a class="btn btn-primary" href="{% url 'rf:set-label-detail' setlabel.id %}" title='detail {{setlabel}} '><i class="mdi mdi-book-open-page-variant"></i></a>
+                                      <a class="btn btn-secondary" href="#" title='edit {{setlabel}}'><i class="mdi mdi-eyedropper text-white"></i></a>
+                                      <a class="btn btn-secondary" href="#" title='{{setlabel}}'><i class="mdi mdi-delete-forever"></i></a>
+                                    {% else %}
+                                      <a class="btn btn-primary" href="{% url 'rf:set-label-detail' setlabel.id %}" title='detail {{setlabel}} '><i class="mdi mdi-book-open-page-variant"></i></a>
+                                      <a class="btn btn-warning" href="{% url 'rf:set-label-update' setlabel.id %}" title='edit {{setlabel}}'><i class="mdi mdi-eyedropper text-white"></i></a>
+                                      <a id="delete-data" class="btn btn-danger" href="{% url 'rf:set-label-delete' setlabel.id %}" title='{{setlabel}}'><i class="mdi mdi-delete-forever"></i></a>
+                                    {% endif %}
+
+                                  </td>
+                                </tr>        
+                              {% endfor %}
+                        </tbody>
+                      </table>
+                    </div>
+                  {% endif %}
+                </div>
+              </div>
+
+    </div>
+{% endblock content %}
+
+
+{% comment %} JAVASCRIPTS {% endcomment %}
+{% block app_scripts %}
+    {% comment %} <script src="{% static 'buku/js/script.js' %}"></script> {% endcomment %}
+    <script>
+    (function($) {
+        'use strict';
+        $(function() {
+            $("#set-label").addClass('active');
+            
+            $('#coba').DataTable({
+                "aLengthMenu": [
+                    [5, 10, 15, -1],
+                    [5, 10, 15, "All"]
+                ],
+                "iDisplayLength": 10,
+                "language": {
+                    search: "search : "
+                },
+                searching: true, paging: true, info: true
+            });
+
+            {% if messages %}
+              {% for message in messages %}
+                swal({
+                  type: 'success',
+                  title: 'Berhasil!',
+                  text: '{{message}}',
+                  timer: 2500
+                });
+              {% endfor %}
+            {% endif %}
+
+            // action add update
+
+              // delete
+              $('body').on('click', '#delete-data', function (event) {
+                  event.preventDefault();
+                  var me = $(this),
+                      url = me.attr('href'),
+                      title = me.attr('title'),
+                      csrf_token = $("[name=csrfmiddlewaretoken]").val();
+                  swal({
+                      title: 'Apakah Anda Yakin ?',
+                      text: 'ingin menghapus ' + '"'+ title +'"',
+                      type: 'warning',
+                      showCancelButton: true,
+                      confirmButtonColor: '#3085d6',
+                      cancelButtonColor: '#d33',
+                      confirmButtonText: 'Delete'
+                  }).then((result) => {
+                  if (result.value) {
+                      $.ajax({
+                          url: url,
+                          type: "POST",
+                          data: {
+                              'csrfmiddlewaretoken': csrf_token
+                          },
+                          success: function (response) {
+                              setTimeout(function () { location.reload();}, 2600);
+                              swal({
+                                  type: 'success',
+                                  title: 'Success!',
+                                  text: 'Data ' + '"'+ title +'"'+ ' berhasil dihapus!',
+                                  timer: 2500
+
+                              });
+                          },
+                          error: function (xhr) {
+                              swal({
+                                  type: 'error',
+                                  title: 'Oops...',
+                                  text: 'Something went wrong!'
+                              });
+                          }
+                      });
+                  }
+                  });
+              });
+              // set default
+              $('body').on('click', '#set-default-dataset', function (event) {
+                  event.preventDefault();
+                  var me = $(this),
+                      url = me.attr('href'),
+                      title = me.attr('title'),
+                      csrf_token = $("[name=csrfmiddlewaretoken]").val();
+                  swal({
+                      title: 'Apakah Anda Yakin ?',
+                      text: 'ingin melakukan ' + '"'+ title +'"',
+                      type: 'warning',
+                      showCancelButton: true,
+                      confirmButtonColor: '#3085d6',
+                      cancelButtonColor: '#d33',
+                      confirmButtonText: 'Submit'
+                  }).then((result) => {
+                  if (result.value) {
+                      $.ajax({
+                          url: url,
+                          type: "POST",
+                          data: {
+                              'csrfmiddlewaretoken': csrf_token
+                          },
+                          success: function (response) {
+                              if (response == 'success') {
+                                setTimeout(function () { location.reload();}, 2600);
+                                swal({
+                                    type: 'success',
+                                    title: 'Success!',
+                                    text: '"'+ title +'"'+ ' berhasil',
+                                    timer: 2500
+                                });
+                              }else {
+                                swal({
+                                  type: response,
+                                  title: 'Hanya Binary Kelas',
+                                  text: '"--pastikan set nilai kolom label  &  nilai label kelas kanker dengan benar--"'
+                              });
+                              }
+                          },
+                          error: function (xhr) {
+                              swal({
+                                  type: 'error',
+                                  title: 'Hanya Binary Kelas',
+                                  text: '"--pastikan set nilai kolom label  &  nilai label kelas kanker dengan benar--"'
+                              });
+                          }
+                      });
+                  }
+                  });
+              });
+
+        });
+    })(jQuery);
+    </script>
+{% endblock app_scripts %}

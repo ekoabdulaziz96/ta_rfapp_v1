@@ -1,0 +1,90 @@
+{% extends 'templates.html' %}
+{% load static %}
+
+{% comment %} CSS {% endcomment %}
+{% block app_style %}
+    <link rel="stylesheet" href="{% static 'random_forest/css/style_form.css' %} ">
+    <link rel="stylesheet" href="{% static 'vendor/select-picker/bootstrap-select.min.css' %}">
+
+{% endblock app_style %}
+
+{% comment %} CONTENT {% endcomment %}
+{% block content_header %}
+{% endblock content_header %}
+
+{% block content %}
+    <div class=" container">
+    {% comment %} header {% endcomment %}
+        <div class="row">
+          <div class="col-md-12 grid-margin">
+            <div class="d-flex justify-content-between flex-wrap">
+              <div class="d-flex align-items-end flex-wrap">
+                <div class="mr-3 mr-xl-5 ml-4">
+                  <a class="btn btn-secondary" href="{% url 'rf:random-forest-index' %} ">
+                    <i class='mdi mdi-keyboard-backspace'></i> All {{page_role}}
+                  </a>
+                </div>
+              </div>
+              <div class="d-flex justify-content-between align-items-end flex-wrap">
+                  <div class="mr-3 mr-xl-5">
+                    <h2>{{page_judul}}</h2>
+                    <p class="mb-md-0">{{page_deskripsi}} </p>
+                  </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      <br>
+      
+        <div class="alert alert-warning" >
+          <h6> <u> Count row (baris) dataset</u> : {{count_row_x}} </h6>
+          <ul>
+            <li>Perhatikan besaran nilai "K" pada K-Folds Croos Validation dengan melihat nilai row(baris) dataset</li>
+          </ul>
+          <h6> <u> Info Default hyperparameter RF </u>: criterion="gini"; bootstrap=True; min_samples_split=2; min_samples_leaf=1; </h6>
+        </div>
+
+       <form method="POST" enctype="multipart/form-data">
+         {% csrf_token %}
+
+            {{form.as_p}}
+         
+         <br>
+         <a class="btn btn-secondary" href="{% url 'rf:random-forest-index' %} ">Cancel</a>
+         <button type="submit" class="btn btn-success">submit</button>
+       </form>
+
+    </div>
+
+{% endblock content %}
+
+
+{% comment %} JAVASCRIPTS {% endcomment %}
+{% block app_scripts %}
+    <script src="{% static 'random_forest/js/script.js' %}"></script>
+    <script src="{% static 'vendor/select-picker/bootstrap-select.min.js' %}"></script>
+
+    <script>
+        (function($) {
+        'use strict';
+            $(function() {
+              $("#random-forest").addClass('active');
+              $( ".errorlist" ).addClass('alert alert-danger');
+
+              $( "#id_k_cv" ).attr('max',{{count_row_x}});
+              //init dataset
+              $('#id_dataset').find('option').remove();
+              $('#id_setlabel').find('option').remove();
+              $('#id_setfitur').find('option').remove();
+              $('#id_hyperparameter').find('option').remove();
+
+              $('#id_dataset').append('<option value="{{get_dataset.id}}">{{get_dataset}}</option>');
+              $('#id_setlabel').append('<option value="{{get_label.id}}">{{get_label}}</option>');
+              $('#id_setfitur').append('<option value="{{get_fitur.id}}">{{get_fitur}}</option>');
+              $('#id_hyperparameter').append('<option value="{{get_hyperparameter.id}}">{{get_hyperparameter}}</option>');
+
+
+            });
+        })(jQuery);
+    </script>
+{% endblock app_scripts %}

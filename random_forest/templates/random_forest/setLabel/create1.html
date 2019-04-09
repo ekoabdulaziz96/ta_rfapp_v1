@@ -1,0 +1,278 @@
+{% extends 'templates.html' %}
+{% load static %}
+
+{% comment %} CSS {% endcomment %}
+{% block app_style %}
+    <link rel="stylesheet" href="{% static 'random_forest/css/style_form.css' %} ">
+    <link rel="stylesheet" href="{% static 'vendor/select-picker/bootstrap-select.min.css' %}">
+{% endblock app_style %}
+
+{% comment %} CONTENT {% endcomment %}
+{% block content_header %}
+{% endblock content_header %}
+
+{% block content %}
+    <div class=" container">
+    {% comment %} header {% endcomment %}
+        <div class="row">
+          <div class="col-md-12 grid-margin">
+            <div class="d-flex justify-content-between flex-wrap">
+              <div class="d-flex align-items-end flex-wrap">
+                <div class="mr-3 mr-xl-5 ml-4">
+                  <a class="btn btn-secondary" href="{% url 'rf:set-label-index' %} ">
+                    <i class='mdi mdi-keyboard-backspace'></i> All {{page_role}} 
+                  </a>
+                </div>
+              </div>
+              <div class="d-flex justify-content-between align-items-end flex-wrap">
+                  <div class="mr-3 mr-xl-5">
+                    <h2>{{page_judul}}</h2>
+                    <p class="mb-md-0">{{page_deskripsi}} </p>
+                  </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      <br>
+{% comment %} content {% endcomment %}
+
+       <form method="POST" enctype="multipart/form-data">
+         {% csrf_token %}
+
+            {{form.as_p}}
+         
+         <br>
+         <a class="btn btn-secondary" href="{% url 'rf:set-label-index' %} ">Cancel</a>
+         <button type="submit" class="btn btn-success">submit</button>
+       </form>
+
+    </div>
+
+{% endblock content %}
+
+
+{% comment %} JAVASCRIPTS {% endcomment %}
+{% block app_scripts %}
+    <script src="{% static 'random_forest/js/script.js' %}"></script>
+    <script src="{% static 'vendor/select-picker/bootstrap-select.min.js' %}"></script>
+    <script>
+        (function($) {
+        'use strict';
+            $(function() {
+              $("#set-label").addClass('active');
+              $( ".errorlist" ).addClass('alert alert-danger');
+
+                String.prototype.replaceAll = function(str1, str2, ignore) 
+              {
+                  return this.replace(new RegExp(str1.replace(/([\"\/\,\!\\\^\$\{\}\[\]\(\)\.\*\+\?\|\<\>\-\&])/g,"\\$&"),(ignore?"gi":"g")),(typeof(str2)=="string")?str2.replace(/\$/g,"$$$$"):str2);
+              }             
+            //init
+              $('#id_kolom_label').append('<option value >--pilih--</option>');
+              $('#id_nilai_label_kanker').append('<option value >--pilih--</option>');
+
+
+              {% if setlabel %}
+                    
+                  var data_id_dataset = '{{setlabel.dataset.id}}';
+                  var data_kolom_label ='{{setlabel.kolom_label}}';
+                  var data_nilai_label_kanker ='{{setlabel.nilai_label_kanker}}';
+                    $.ajax({
+                        url: "{% url 'rf:set-label-get-label' 1 %}".replace('1', data_id_dataset),
+                        type: "GET",
+                        dataType: "JSON",
+                        success: function(data) {
+                          ////console.log(data)
+                          $('#id_kolom_label').find('ul').remove(); 
+                          $('#id_kolom_label').find('option').remove(); 
+                          data = data.replaceAll('"','');
+                          data = data.replaceAll(' ','');
+                          data = data.replace('[','');
+                          data = data.replace(']','');
+                          var datas = data.split(',');
+                          //console.log(datas.length)
+
+                          for(var i = 0; i <datas.length;i++){
+                              if( data_kolom_label == datas[i]) {
+                                $('#id_kolom_label').append('<option value="'+datas[i]+'" selected> '+datas[i]+' </option>');
+                              }else{
+                                $('#id_kolom_label').append('<option value="'+datas[i]+'"> '+datas[i]+' </option>');
+                              }
+                          }
+
+                          $('#id_kolom_label').removeAttr('class','form-control');
+                          $('#id_kolom_label').attr('class','selectpicker');
+                          $('#id_kolom_label').attr('data-live-search','true');
+                          $('#id_kolom_label').attr('data-width','100%');
+                          $('#id_kolom_label').attr('title','--pilih--');
+                          $('.selectpicker').selectpicker();
+
+                        },
+                        error : function() {
+                            alert("Nothing Data");
+                        }
+                  });
+
+                    //console.log('cek1');
+                    var url =" {% url 'rf:set-label-get-label-kanker' 0 'coba' %} ";
+                    url = url.replace('0', data_id_dataset);
+                    url = url.replace('coba', data_kolom_label);
+                          //console.log(url)
+                    $.ajax({
+                        url: url,
+                        type: "GET",
+                        dataType: "JSON",
+                        success: function(data) {
+                        //$('.selectpicker').selectpicker('destroy')
+                        $('#id_nilai_label_kanker').find('option').remove(); 
+                          ////console.log(data)
+                          data = data.replaceAll('"','');
+                          data = data.replaceAll(' ','');
+                          data = data.replace('[','');
+                          data = data.replace(']','');
+                          var datas = data.split(',');
+                          for(var i = 0; i <datas.length;i++){
+                              if( data_nilai_label_kanker == datas[i]) {
+                                $('#id_nilai_label_kanker').append('<option value="'+datas[i]+'" selected> '+datas[i]+' </option>');
+                              }else{
+                                $('#id_nilai_label_kanker').append('<option value="'+datas[i]+'"> '+datas[i]+' </option>');
+                              }
+                          }
+                          $('#id_nilai_label_kanker').removeAttr('class','form-control');
+                          $('#id_nilai_label_kanker').attr('class','selectpicker');
+                          $('#id_nilai_label_kanker').attr('data-live-search','true');
+                          $('#id_nilai_label_kanker').attr('data-width','100%');
+                          $('#id_nilai_label_kanker').attr('title','--pilih--');
+                          $('.selectpicker').selectpicker();
+
+                        },
+                        error : function() {
+                            alert("Nothing Data");
+                        }
+                    });
+
+              {% endif %}
+
+
+
+
+            //set kolom label
+              $('#id_dataset').change(function(){
+                  $('.selectpicker').selectpicker('destroy')
+                  $('#id_kolom_label').attr('class','form-control');
+                  $('#id_kolom_label').removeAttr('class','selectpicker');
+                  $('#id_kolom_label').removeAttr('data-live-search','true');
+                  $('#id_kolom_label').removeAttr('data-width','100%');
+                  $('#id_kolom_label').removeAttr('title','--pilih--');
+                  $('#id_kolom_label').find('option').remove();
+                  $('#id_nilai_label_kanker').find('option').remove(); 
+
+
+                  var id_dataset = $("#id_dataset").val();
+                    $.ajax({
+                        url: "{% url 'rf:set-label-get-label' 0 %}".replace('0', id_dataset),
+                        type: "GET",
+                        dataType: "JSON",
+                        success: function(data) {
+                          ////console.log(data)
+                          $('#id_kolom_label').find('ul').remove(); 
+                          $('#id_kolom_label').find('option').remove(); 
+                          data = data.replaceAll('"','');
+                          data = data.replaceAll(' ','');
+                          data = data.replace('[','');
+                          data = data.replace(']','');
+                          var datas = data.split(',');
+                          //console.log(datas.length)
+
+                          for(var i = 0; i <datas.length;i++){
+                            {% comment %} // {% if setlabel %}
+                            //     if( data_kolom_label == datas[i]) {
+                            //       $('#id_kolom_label').append('<option value="'+datas[i]+'" selected> '+datas[i]+' </option>');
+                            //     }else{
+                            //       $('#id_kolom_label').append('<option value="'+datas[i]+'"> '+datas[i]+' </option>');
+                            //     }
+                            // {% else %}
+                            //   $('#id_kolom_label').append('<option value="'+datas[i]+'"> '+datas[i]+' </option>');
+                            // {% endif %} 
+                            {% endcomment %}
+                              $('#id_kolom_label').append('<option value="'+datas[i]+'"> '+datas[i]+' </option>');
+
+                          }
+
+                          $('#id_kolom_label').removeAttr('class','form-control');
+                          $('#id_kolom_label').attr('class','selectpicker');
+                          $('#id_kolom_label').attr('data-live-search','true');
+                          $('#id_kolom_label').attr('data-width','100%');
+                          $('#id_kolom_label').attr('title','--pilih--');
+                          $('.selectpicker').selectpicker('refresh');
+
+                        },
+                        error : function() {
+                            alert("Nothing Data");
+                        }
+                  });
+              });
+
+            //set kolom label
+              $('#id_kolom_label').change(function(){
+
+                  $('#id_nilai_label_kanker').attr('class','form-control');
+                  $('#id_nilai_label_kanker').removeAttr('class','selectpicker');
+                  $('#id_nilai_label_kanker').removeAttr('data-live-search','true');
+                  $('#id_nilai_label_kanker').removeAttr('data-width','100%');
+                  $('#id_nilai_label_kanker').removeAttr('title','--pilih--');
+                  $('#id_nilai_label_kanker').find('option').remove(); 
+                  var id_dataset = $("#id_dataset").val();
+                  var kolom_label = $("#id_kolom_label").val();
+                        //console.log(kolom_label);
+                  var url =" {% url 'rf:set-label-get-label-kanker' 0 'coba' %} ";
+                  url = url.replace('0', id_dataset);
+                  url = url.replace('coba', kolom_label);
+                        //console.log(url)
+
+                    $.ajax({
+                        url: url,
+                        type: "GET",
+                        dataType: "JSON",
+                        success: function(data) {
+                        //$('.selectpicker').selectpicker('destroy')
+                        $('#id_nilai_label_kanker').find('option').remove(); 
+                          ////console.log(data)
+                          data = data.replaceAll('"','');
+                          data = data.replaceAll(' ','');
+                          data = data.replace('[','');
+                          data = data.replace(']','');
+                          var datas = data.split(',');
+                          for(var i = 0; i <datas.length;i++){
+                          {% comment %} //   {% if setlabel %}
+                          //       if( data_nilai_label_kanker == datas[i]) {
+                          //         $('#id_nilai_label_kanker').append('<option value="'+datas[i]+'" selected> '+datas[i]+' </option>');
+                          //       }else{
+                          //         $('#id_nilai_label_kanker').append('<option value="'+datas[i]+'"> '+datas[i]+' </option>');
+                          //       }
+                          //   {% else %}
+                          //     $('#id_nilai_label_kanker').append('<option value="'+datas[i]+'"> '+datas[i]+' </option>');
+                          //   {% endif %} 
+                          {% endcomment %}
+                          
+                              $('#id_nilai_label_kanker').append('<option value="'+datas[i]+'"> '+datas[i]+' </option>');
+
+                          }
+
+                          $('#id_nilai_label_kanker').removeAttr('class','form-control');
+                          $('#id_nilai_label_kanker').attr('class','selectpicker');
+                          $('#id_nilai_label_kanker').attr('data-live-search','true');
+                          $('#id_nilai_label_kanker').attr('data-width','100%');
+                          $('#id_nilai_label_kanker').attr('title','--pilih--');
+                          $('.selectpicker').selectpicker('refresh');
+
+                        },
+                        error : function() {
+                            alert("Nothing Data");
+                        }
+                  });
+              });
+
+            });
+        })(jQuery);
+    </script>
+{% endblock app_scripts %}

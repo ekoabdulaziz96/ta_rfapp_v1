@@ -1,0 +1,67 @@
+{% load static %}
+    
+     <nav class="sidebar sidebar-offcanvas" id="sidebar">
+        <ul class="nav">
+
+          <li class="nav-item" id="home">
+            <a class="nav-link" href="/">
+              <i class="mdi mdi-home menu-icon"></i>
+              <span class="menu-title">Home</span>
+            </a>
+          </li>
+
+          <li class="nav-item" id="dataset">
+            <a class="nav-link" href="{% url 'rf:dataset-index' %}">
+              <i class="mdi mdi-database menu-icon"></i>
+              <span class="menu-title">Dataset</span>
+            </a>
+          </li>
+          <li class="nav-item" id="set-label">
+            <a class="nav-link" href="{% url 'rf:set-label-index' %}">
+              <i class="mdi mdi-shuffle-variant menu-icon"></i>
+              <span class="menu-title">Set label (y)</span>
+            </a>
+          </li>
+          <li class="nav-item" id="set-fitur">
+            <a class="nav-link" href="{% url 'rf:set-fitur-index' %}">
+              <i class="mdi mdi-shuffle-variant menu-icon"></i>
+              <span class="menu-title">Set Fitur (X)</span>
+            </a>
+          </li>
+          <li class="nav-item" id="hyperparameterRF">
+            <a class="nav-link" href="{% url 'rf:hyperparameter-RF-index' %}">
+              <i class="mdi mdi-shuffle-variant menu-icon"></i>
+              <span class="menu-title">Set Hyperparameter RF</span>
+            </a>
+          </li>
+          <li class="nav-item" id="random-forest">
+            <a class="nav-link" href="{% url 'rf:random-forest-index' %}">
+              <i class="mdi mdi-server menu-icon"></i>
+              <span class="menu-title">Run Random Forest</span>
+            </a>
+          </li>
+          {% comment %} <li class="nav-item" id="set-default">
+            <a class="nav-link" data-toggle="collapse" href="#set-default-collapse" aria-expanded="false" aria-controls="ui-basic">
+              <i class="mdi mdi-shuffle-variant menu-icon"></i>
+              <span class="menu-title">Set Default</span>
+              <i class="menu-arrow"></i>
+            </a>
+            <div class="collapse" id="set-default-collapse">
+              <ul class="nav flex-column sub-menu">
+                <li class="nav-item" id="select-dataset"> <a class="nav-link" href="{% url 'rf:select-dataset-index' %}">Select Dataset</a></li>
+                <li class="nav-item" id="preprocessing"> <a class="nav-link" href="pages/ui-features/buttons.html">Preprocessing</a></li>
+                <li class="nav-item" id="hyperparameter"> <a class="nav-link" href="pages/ui-features/typography.html">Hyperparameter RF</a></li>
+              </ul>
+            </div>
+          </li> 
+
+          <li class="nav-item" id="hystory">
+            <a class="nav-link" href="#">
+              <i class="mdi mdi-timetable menu-icon"></i>
+              <span class="menu-title">Hystory</span>
+            </a>
+          </li>{% endcomment %}
+
+
+        </ul>
+      </nav>

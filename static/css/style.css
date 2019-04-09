@@ -1,0 +1,84 @@
+body {
+	zoom: 0.9;
+}
+
+.modal {
+	background-color: rgb(0, 0, 0);
+	/* zoom: 1 */
+}
+
+.mdi {
+	zoom: 1.2;
+}
+
+.sidebar {
+	zoom: 0.95;
+}
+
+.content-wrapper,
+.footer {
+	width: 102.4%;
+}
+
+.content-wrapper {
+	min-height: 565px !important;
+	padding-top: 20px !important;
+}
+
+.footer {
+	padding: 10px;
+	padding-right: 50px !important;
+	background-color: rgb(216, 215, 215) !important;
+}
+
+table tbody tr td a,
+table tbody tr td button {
+	width: 50px;
+	text-align: center
+}
+
+
+.table td {
+	padding: 10px !important;
+	font-size: 16px !important;
+
+}
+
+.table th {
+	padding: 20px !important;
+}
+
+.card {
+	margin-top: -5px;
+	padding-top: -5px
+}
+
+/* table {
+	margin-bottom: 10px !important;
+} */
+
+.table {
+	zoom: 0.9;
+	/* font-size: 14px !important; */
+
+}
+
+.swal2-container {
+	zoom: 0.8 !important;
+}
+
+.activate {
+	color: black !important;
+	font-weight: bold
+		/* background-color: red !important; */
+}
+
+.use-dataset {
+	width: 140px;
+	height: 40px;
+}
+
+.use-dataset i {
+	padding: 5px;
+
+}

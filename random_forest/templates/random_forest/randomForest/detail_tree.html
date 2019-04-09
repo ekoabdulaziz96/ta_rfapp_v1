@@ -1,0 +1,104 @@
+{% extends 'templates.html' %}
+{% load static %}
+
+{% comment %} CSS {% endcomment %}
+{% block app_style %}
+    <link rel="stylesheet" href="{% static 'random_forest/css/style.css' %} ">
+    <link rel="stylesheet" href="{% static 'vendor/select-picker/bootstrap-select.min.css' %}">
+
+{% endblock app_style %}
+
+{% comment %} CONTENT {% endcomment %}
+{% block content_header %}
+{% endblock content_header %}
+
+{% block content %}
+    <div class=" container">
+    {% comment %} header {% endcomment %}
+        <div class="row">
+          <div class="col-md-12 grid-margin">
+            <div class="d-flex justify-content-between flex-wrap">
+              <div class="d-flex align-items-end flex-wrap">
+                <div class="mr-3 mr-xl-5 ml-4">
+                  <a class="btn btn-secondary" href="{% url 'rf:random-forest-index' %} ">
+                    <i class='mdi mdi-keyboard-backspace'></i> All {{page_role}}
+                  </a>
+                </div>
+              </div>
+              <div class="d-flex justify-content-between align-items-end flex-wrap">
+                  <div class="mr-3 mr-xl-5">
+                    <h2>{{page_judul}}</h2>
+                    <p class="mb-md-0">{{page_deskripsi}} </p>
+                  </div>
+              </div>
+            </div>
+          </div>
+        </div>
+    <br>
+        <div class="text-center mb-4" >
+          <a class="btn btn-info" href="{% url 'rf:random-forest-detail' randomforest.id %}">
+              <i class='mdi mdi-arrow-left' ></i> 
+              View  Detail &nbsp;
+          </a>
+          <a class="btn alert-secondary" href="#">
+              View Pohon &nbsp;
+              <i class='mdi mdi-arrow-right' ></i> 
+          </a>
+        </div>
+        <div class="card">
+            <div class="card-header text-center alert-warning">
+                  <div class="form-group">
+                    <label for="no_pohon">PIlih Nomor Pohon :</label>
+                    <select name="no_pohon" id="no_pohon" class='selectpicker' data-live-search='true' data-width='100%'>
+                      <option value="">--Pilih Pohon--</option>
+                      <option value="1">1</option>
+                    </select>                       
+                  </div>
+                  <a id="submit-pohon" class="btn btn-success" href="{% url 'rf:random-forest-pohon' randomforest.id 999 %}" title='{{randomforest}}'>
+                    Submit
+                  </a>
+            </div>
+            <div class="card-body">
+              <h5>Pohon ke-{{no_pohon}}</h5>
+              <embed src="{% static 'random_forest/tree/tree.pdf' %}" type="application/pdf" width="100%" height="750px" class="responsive">
+              
+              <a href="{% static 'random_forest/tree/tree.pdf' %}">download</a>
+            </div>
+        </div>
+        
+
+    </div>
+
+{% endblock content %}
+
+{% comment %} JAVASCRIPTS {% endcomment %}
+{% block app_scripts %}
+    <script src="{% static 'random_forest/js/script.js' %}"></script>
+    <script src="{% static 'vendor/select-picker/bootstrap-select.min.js' %}"></script>
+
+    <script>
+        (function($) {
+        'use strict';
+            $(function() {
+                //$( "#dataset" ).addClass('active');
+                $("#random-forest").addClass('active');
+                $('#no_pohon').find('option').remove();
+                {% for i in n_pohon %}
+                  $('#no_pohon').append('<option value="{{i}}">{{i}}</option>');
+                {% endfor %}
+
+                $('body').on('click', '#submit-pohon', function (event) {
+                event.preventDefault();
+                var me = $(this),
+                    url = me.attr('href'),
+                    title = me.attr('title');
+                var no_pohon = $('#no_pohon').val();
+                url = url.replace('999',no_pohon)
+
+                window.location.replace(url);
+              });
+
+            });
+        })(jQuery);
+    </script>
+{% endblock app_scripts %}
